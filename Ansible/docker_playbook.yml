@@ -1,0 +1,36 @@
+- name: Configure Docker in Ubuntu Server
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Update apt package list
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker.io
+        state: present
+        update_cache: yes
+
+    - name: Add user to docker group
+      user:
+        name: ubuntu  # Replace 'ubuntu' with the correct username if needed
+        groups: docker
+        append: yes
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Run Hello World container
+      docker_container:
+        name: my_hello_world
+        image: hello-world
+        state: started
+
